@@ -1,6 +1,7 @@
 var filename = "order_list.csv";
 var orders = 0;
 var columns = 0;
+var table;
 
 function preload() {
     table = loadTable(filename, 'csv');
@@ -17,21 +18,21 @@ function setup() {
 function draw() {
     background(220);
     updateTableData();
+    showTable();
 }
 
 
 function updateTableData() {
-	table = loadTable(filename, 'csv', loadTable_cb(), _loadTable_cb());
+	loadTable(filename, 'csv', loadTable_cb, _loadTable_cb);
     orders = table.getRowCount();
 }
 
-function loadTable_cb() {
+function loadTable_cb(table) {
     print("Table reload success.");
-    showTable();
 }
 
-function _loadTable_cb() {
-    print("Table reload fail.");
+function _loadTable_cb(error) {
+    print(error);
 }
 
 function showTable() {
@@ -48,7 +49,7 @@ function showTable() {
     textSize(20);
     for (i = 0; i < orders; i++) {
         for (j = 0; j < columns; j++) {  
-            text(table.get(i, j),
+            text(table.getString(i, j),
                 startX + (columnWidth * (j)),
                 startY + (rowHeight * (i + 1)),
                 rowHeight,

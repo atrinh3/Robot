@@ -11,24 +11,23 @@ function setup() {
     createCanvas(displayWidth, displayHeight);
     //fullscreen(createCanvas(displayWidth, displayHeight));
     columns = table.getColumnCount();
-    //frameRate(30);
 }
 
 
 function draw() {
     background(220);
-    //updateTableData();
-    showTable();
+    updateTableData();
 }
 
 
 function updateTableData() {
-    table = table.loadTable(filename, 'csv', loadTable_cb(), _loadTable_cb());
+	table = loadTable(filename, 'csv', loadTable_cb(), _loadTable_cb());
     orders = table.getRowCount();
 }
 
 function loadTable_cb() {
     print("Table reload success.");
+    showTable();
 }
 
 function _loadTable_cb() {
@@ -44,6 +43,7 @@ function showTable() {
     let j = 0;
     orders = table.getRowCount();
     columns = table.getColumnCount();
+    print(columns);
     showHeader(startX, startY, columnWidth, rowHeight);
     textSize(20);
     for (i = 0; i < orders; i++) {

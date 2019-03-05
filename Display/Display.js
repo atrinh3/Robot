@@ -1,6 +1,10 @@
 var filename = "order_list.csv";
-var orders = 0;
-var columns = 0;
+var rowHeight = displayHeight * 0.09;
+var columnWidth = displayWidth * 0.2;
+var startX = displayWidth * 0.05;
+var startY = displayHeight * 0.05;
+var orders;
+var columns;
 var table;
 
 function preload() {
@@ -37,10 +41,6 @@ function _loadTable_cb(error) {
 }
 
 function showTable() {
-    let rowHeight = displayHeight * 0.09;
-    let columnWidth = displayWidth * 0.2;
-    let startX = displayWidth * 0.05;
-    let startY = displayHeight * 0.05;
     let i = 0;
     let j = 0;
     showHeader(startX, startY, columnWidth, rowHeight);

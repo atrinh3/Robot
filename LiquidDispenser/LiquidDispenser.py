@@ -4,18 +4,19 @@
 
 import serial
 import time
+import os
 
 # Manager class that will control the dispenser of a liquid.
 class DispenseManager:
-    LOW_THRESHOLD = .25 #%
+    LOW_THRESHOLD = 0.25 #%
     ARDUINO_BOARD = "-m mega2560"
 
-    def __init__(self, liquid, amount=0, maximum=1000, arduino=ARDUINO_BOARD):
+    def __init__(self, liquid, amount=0, maximum=1000, arduino=ARDUINO_BOARD, threshold=LOW_THRESHOLD):
         self.ingredient = liquid
 
         self.container_max = maximum
         self.liquid_left = amount # mL
-        self.threshold = LOW_THRESHOLD
+        self.threshold = threshold
         self.low = False
 
         self.ser = None
@@ -23,8 +24,9 @@ class DispenseManager:
         self.arduino_is_setup = False
 
 
+    @property
     def __repr__(self):
-        return ("Ingredient:{};Level:{};ArduinoSetup".format(
+        return ("Ingredient:{};Level:{};ArduinoSetup:{}".format(
             self.ingredient, self.level, self.arduino_is_setup))
 
     @property
@@ -69,15 +71,17 @@ class DispenseManager:
                 return False
             try:
                 line = self.ser.readline().decode('utf-8','ignore')
-                if line.decode == "Testing..."
+                if line.decode == "Testing...":
                     return True
             except:
-                print("Failed to get a response from the Arduino. Trying again...")
+                print("Failed to get response from Arduino. Trying again...")
                 time.sleep(0.5)
 
-    def dispense(self, amount, attempts=5):
+    def send_dispense_signal(self, amount, attempts=5):
         if self.arduino_is_setup:
             if (amount < self.liquid_left):
+                print("Sending signal to dispense {}mL of {}.".format(
+                    amount, self.ingredient))
                 self.ser.write("{}&".format(amount))
                 self.update_remaining_liquid(self.liquid_left - amount)
                 return True
@@ -86,10 +90,11 @@ class DispenseManager:
                 return False
         else:
             print("Arduino is not set up yet.")
-            print("Setting up Arduino connection.")
             if attempts > 0:
-                self.set_up_arduino()
-                self.dispense(amount, attemps-1)
+                print("Setting up Arduino connection. Attempt {}/5.".format(
+                    6 - attempts))
+                self.setup_arduino()
+                self.send_dispense_signal(amount, attempts-1)
             else:
                 print("Failed to set up Arduino.")
                 return False

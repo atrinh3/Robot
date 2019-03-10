@@ -1,5 +1,10 @@
+import serial
+
 class ArmController:
     default_length = 10 # inches
+    move_signal = "%"
+    stop_signal = "$"
+
 
     def __init__(self, length=default_length, angle=0):
         self.length = length
@@ -39,13 +44,13 @@ class ArmController:
     def arduino_connection(self):
         pass
 
-    # TODO: send signal to arduino to move to specified angle.
+    
     def send_move_signal(self, angle):
-        pass
+        serial.write(move_signal + angle + move_signal)
     
     # TODO: send signal to arduino to stop wherever it currently is. 
     # Should read angle and update angle.
     def send_stop_signal(self):
-        pass
-    
+        serial.write(stop_signal)
+
 

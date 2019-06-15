@@ -23,6 +23,9 @@ TODO 6/15:
 #define SOLENOID_RELAY 2
 #define SOLENOID_LED 3
 
+#define TEST "Are you there"
+#define TEST_REPLY "I am here"
+
 char character;
 int charsAvailable;
 String currentCommand, commandBuffer, serialInput;
@@ -40,12 +43,12 @@ void loop() {
     serialInput.remove(serialInput.indexOf('\r'));
     serialInput.remove(serialInput.indexOf('\n'));
     
-    if (serialInput.indexOf("Open valve") > 0) {
+    if (serialInput.indexOf(TEST) > 0) {
+        Serial.println(TEST_REPLY);
+    } else if (serialInput.indexOf("Open valve") > 0) {
         openSolenoid(SOLENOID_RELAY);
         ledOn(SOLENOID_LED);
-    }
-
-    if (serialInput.indexOf("Close valve") > 0) {
+    } else if (serialInput.indexOf("Close valve") > 0) {
         closeSolenoid(SOLENOID_RELAY);
         ledOff(SOLENOID_LED);
     }

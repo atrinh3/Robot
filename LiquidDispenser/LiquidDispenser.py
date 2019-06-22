@@ -73,7 +73,7 @@ class DispenseManager:
             return True
         else:
             print("Arduino setup failed - reflashing Arduino.")
-            self.arduino_is_setup = reflash_arduino
+            self.arduino_is_setup = self.reflash_arduino()
             return self.arduino_is_setup
 
 

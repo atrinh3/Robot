@@ -47,6 +47,22 @@ class DispenseManager:
     def is_low(self):
         return self.low
 
+    
+    def validate_response(self, actual, expected):
+        """Verifies that a message received from the Arduino is as 
+        expected.
+
+        :param actual: UTF-8 encoded message from Arduino
+        :param expected: Decoded message expected from the Arduino
+        """
+        decoded = actual.decode()
+        print(decoded)
+        if decoded != expected:
+            print("ERROR - Invalid response received!")
+            return False
+        return True
+    
+    
     def update_remaining_liquid(self, new):
         if new < self.threshold:
             self.low = True
@@ -131,31 +147,16 @@ class DispenseManager:
 
         self.ser.write(open_msg.encode())
         time.sleep(1)
-        if not validate_response(self.ser.readline(), "Valve open"):
+        if not self.validate_response(self.ser.readline(), "Valve open"):
             print("Valve was not opened")
         
         time.sleep(t)
         
         self.ser.write(close_msg.encode())
         time.sleep(1)
-        if not validate_response(self.ser.readline(), "Valve closed"):
+        if not self.validate_response(self.ser.readline(), "Valve closed"):
             print("Valve was not closed!")
             #TODO: This is a significant error.
-
-
-    def validate_response(actual, expected):
-        """Verifies that a message received from the Arduino is as 
-        expected.
-
-        :param actual: UTF-8 encoded message from Arduino
-        :param expected: Decoded message expected from the Arduino
-        """
-        decoded = actual.decode()
-        print(decoded)
-        if decoded != expected:
-            print(ERROR - Invalid response received!)
-            return False
-        return True
     
 
     # This is a future implementation.  Currently have no resources to
@@ -163,9 +164,9 @@ class DispenseManager:
     #TODO: IF this is finniky, can add a retry recursion
     #TODO: In the future, try to find a way to convert time into amount.
     #       Maybe feedback loop with weight somewhere
-    def send_dispense_signal(self, amount, time=1):
+    def send_dispense_signal(self, amount, time=1, attempts=5):
         if self.arduino_is_setup:
-            if (amount < self.remaining_liquid):
+            if amount < self.remaining_liquid:
                 print("Sending signal to dispense {}mL of {}.".format(
                     amount, self.ingredient))
                 self.ser.write("{}&".format(amount))
